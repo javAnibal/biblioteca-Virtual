@@ -13,7 +13,7 @@ public class Usuario {
     private TipoSuscripcion tipoSuscripcion;
     private List<Libro> listaLibros;
 
-    public Usuario(String nombre, int edad, int numUsuario, TipoSuscripcion tipoSuscripcion) {
+    public Usuario(String nombre, int edad, TipoSuscripcion tipoSuscripcion) {
         this.nombre = nombre;
         this.edad = edad;
         this.numUsuario = contadorUsuarios++;

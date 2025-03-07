@@ -52,7 +52,7 @@ public class Biblioteca implements Prestamo {
 
     @Override
     public void prestarLibro(Usuario usuario, Libro libro) throws BibliotecaException {
-        // Verificar si el libro está disponible
+       
         for (Libro libroEstado : listaLibros) {
             if (!libroEstado.isEstado() && libroEstado.getTitulo().equalsIgnoreCase(libro.getTitulo())) {
                 throw new BibliotecaException("El libro \"" + libro.getTitulo() + "\" ya está prestado.");
