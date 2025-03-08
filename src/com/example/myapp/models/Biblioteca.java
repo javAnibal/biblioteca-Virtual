@@ -52,46 +52,74 @@ public class Biblioteca implements Prestamo {
 
     @Override
     public void prestarLibro(Usuario usuario, Libro libro) throws BibliotecaException {
-       
+
+        Libro libroEncontrado = null;
+
         for (Libro libroEstado : listaLibros) {
-            if (!libroEstado.isEstado() && libroEstado.getTitulo().equalsIgnoreCase(libro.getTitulo())) {
-                throw new BibliotecaException("El libro \"" + libro.getTitulo() + "\" ya está prestado.");
-            } else if (libroEstado.getTitulo().equalsIgnoreCase(libro.getTitulo())) {
-                System.out.println("El libro \"" + libro.getTitulo() + "\" está disponible.");
+            if (libroEstado.getTitulo().equalsIgnoreCase(libro.getTitulo())) {
+                libroEncontrado = libroEstado;
+                break;
             }
         }
 
-        // Verificar si el usuario no ha alcanzado su límite de libros permitidos
+        if (libroEncontrado == null) {
+            System.out.println("El libro no está registrado en la biblioteca.");
+            return;
+        }
+
+        if (!libroEncontrado.isEstado()) {
+            System.out.println("El libro " + libroEncontrado.getTitulo() + " no se encuentra disponible.");
+            return;
+        }
+
         if (usuario.getListaLibros().size() >= usuario.getTipoSuscripcion().getLibrosMax()) {
             throw new BibliotecaException("El usuario ha alcanzado el límite de libros permitidos para su suscripción.");
         }
 
-        // Registrar el préstamo
-        usuario.getListaLibros().add(libro);
-        libro.setEstado(false);
 
-        // Mensaje de confirmación
-        System.out.println("El libro \"" + libro.getTitulo() + "\" ha sido prestado al usuario \"" + usuario.getNombre() + "\".");
+        libroEncontrado.setEstado(false);
+        usuario.getListaLibros().add(libroEncontrado);
+
+
+        System.out.println("El libro " + libroEncontrado.getTitulo() + " ha sido prestado al usuario " + usuario.getNombre() + ".");
     }
+
 
     @Override
     public void devolverLibro(Usuario usuario, Libro libro) throws BibliotecaException {
+        Libro libroPrestado = null;
+        for (Libro l : usuario.getListaLibros()) {
+            if (l.getTitulo().equalsIgnoreCase(libro.getTitulo())) {
+                libroPrestado = l;
+                break;
+            }
+        }
 
-        // Verificar si el usuario tiene el libro en préstamo
-        if (!usuario.getListaLibros().contains(libro)) {
+        if (libroPrestado == null) {
             throw new BibliotecaException("El usuario no tiene este libro en préstamo.");
         }
-        libro.setEstado(true);
-        usuario.getListaLibros().remove(libro);
-        // Mensaje de confirmación
-        System.out.println("El libro \"" + libro.getTitulo() + "\" ha sido devuelto con éxito por el usuario \"" + usuario.getNombre() + "\".");
+
+        for (Libro l : listaLibros) {
+            if (l.getTitulo().equalsIgnoreCase(libroPrestado.getTitulo())) {
+                l.setEstado(true);
+                break;
+            }
+        }
+        usuario.getListaLibros().remove(libroPrestado);
+
+        System.out.println("El libro \"" + libroPrestado.getTitulo() + "\" ha sido devuelto con éxito por el usuario \"" + usuario.getNombre() + "\".");
 
     }
 
     @Override
     public void mostrarInfoPrestamos() {
-        // Mostrar información de los usuarios y sus préstamos
         System.out.println("=== Información de Préstamos ===");
+        mostrarUsuariosConPrestamos();
+        mostrarLibrosDisponibles();
+    }
+
+    // Mostrar los préstamos de cada usuario
+    private void mostrarUsuariosConPrestamos() {
         for (Usuario usuario : listaUsuarios) {
             System.out.println("Usuario: " + usuario.getNombre() + " | Suscripción: " + usuario.getTipoSuscripcion());
             if (usuario.getListaLibros().isEmpty()) {
@@ -103,8 +131,10 @@ public class Biblioteca implements Prestamo {
                 }
             }
         }
+    }
 
-        // Mostrar libros disponibles en la biblioteca
+    // Mostrar libros disponibles en la biblioteca
+    private void mostrarLibrosDisponibles() {
         System.out.println("\n=== Libros Disponibles en la Biblioteca ===");
         for (Libro libro : listaLibros) {
             if (libro.isEstado()) {

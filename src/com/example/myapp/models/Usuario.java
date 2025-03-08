@@ -68,4 +68,15 @@ public class Usuario {
     public void setListaLibros(List<Libro> listaLibros) {
         this.listaLibros = listaLibros;
     }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "nombre='" + nombre + '\'' +
+                ", edad=" + edad +
+                ", numUsuario=" + numUsuario +
+                ", tipoSuscripcion=" + tipoSuscripcion +
+                ", listaLibros=" + listaLibros +
+                '}';
+    }
 }
